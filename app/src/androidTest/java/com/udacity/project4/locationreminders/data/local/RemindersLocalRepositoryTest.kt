@@ -111,5 +111,24 @@ class RemindersLocalRepositoryTest {
 
     }
 
+    @Test
+    fun getReminder_WhenReminderDoesNotExistReturnError() = runBlocking {
+
+            // Given A new reminder saved in the database
+            val reminder = ReminderDTO(
+                "title", "description", "location",0.0,0.0
+            )
+        repository.saveReminder(reminder)
+
+            // When delete all reminders
+            repository.deleteAllReminders()
+            val result = repository.getReminder(reminder.id) as Result.Error
+
+            // them should return error message
+          assertThat(result.message, `is`("Reminder not found!"))
+        }
+
+
+
 
 }

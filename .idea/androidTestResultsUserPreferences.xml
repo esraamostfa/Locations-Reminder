@@ -73,6 +73,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-1042089440">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="RFCT202K2FN" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-M526BR" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-1008490159">
           <value>
             <AndroidTestResultsTableState>
@@ -177,6 +191,21 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="RFCT202K2FN" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-M526BR" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1299040840">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Nexus_5X_API_29" value="120" />
                   <entry key="RFCT202K2FN" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="samsung&#10; SM-M526BR" value="120" />

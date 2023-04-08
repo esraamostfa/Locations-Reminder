@@ -145,4 +145,31 @@ class RemindersActivityTest :
         activityScenario.close()
     }
 
+    @Test
+    fun addReminder_withNoTitleShowSnackBar() = runBlocking {
+
+        // Start up Reminders screen.
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the addReminderFAB btn, select location,
+        //description and  but not title and save
+        onView(withId(R.id.addReminderFAB)).perform(click())
+        onView(withId(R.id.selectLocation)).perform(click())
+        onView(withId(R.id.map)).perform(longClick())
+        onView(withId(R.id.save_location_btn)).perform(click())
+        onView(withId(R.id.reminderDescription)).perform(replaceText("Description"))
+        onView(withId(R.id.saveReminder)).perform(click())
+
+
+        // Verify snackBar is displayed with right message
+        onView(withId(R.id.snackbar_text))
+            .check(matches(withText(R.string.err_enter_title)))
+
+        // Make sure the activity is closed before resetting the db.
+        activityScenario.close()
+    }
+
+
+
 }
