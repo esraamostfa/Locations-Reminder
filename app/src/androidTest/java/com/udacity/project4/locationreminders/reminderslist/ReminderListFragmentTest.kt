@@ -65,7 +65,6 @@ class ReminderListFragmentTest {
     }
 
 
-    //    TODO: test the navigation of the fragments.
     @Test
     fun clickAddReminderButton_navigateToSaveReminderFragment() = runBlockingTest {
 

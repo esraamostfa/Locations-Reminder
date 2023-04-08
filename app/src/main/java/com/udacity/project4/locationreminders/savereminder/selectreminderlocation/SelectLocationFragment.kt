@@ -19,10 +19,8 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.browser.customtabs.CustomTabsClient.getPackageName
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -68,7 +66,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         val mapFragment =
             childFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         checkDeviceLocationSettings(false)
@@ -140,6 +138,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setMapStyle(map)
     }
 
+    @SuppressLint("MissingPermission")
     private fun zoomToCurrentLocation(){
 
         val locationClient = LocationServices.getFusedLocationProviderClient(requireActivity())

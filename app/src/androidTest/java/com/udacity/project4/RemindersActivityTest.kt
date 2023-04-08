@@ -1,6 +1,8 @@
 package com.udacity.project4
 
+import android.app.Activity
 import android.app.Application
+import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
@@ -12,7 +14,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.google.android.material.internal.ContextUtils.getActivity
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
@@ -22,6 +23,7 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
@@ -85,15 +87,24 @@ class RemindersActivityTest :
         }
     }
 
-    @get:Rule
-     val activityTestRule: ActivityScenarioRule<RemindersActivity> =
-        ActivityScenarioRule(RemindersActivity::class.java)
+//    @get:Rule
+//     val activityScenarioRule: ActivityScenarioRule<RemindersActivity> =
+//        ActivityScenarioRule(RemindersActivity::class.java)
+//
+//    private lateinit var decorView: View
 
     // An idling resource that waits for Data Binding to have no pending bindings.
     private val dataBindingIdlingResource = DataBindingIdlingResource()
 
-     @Before
-    fun registerIdlingResource() {
+//    @Before
+//    fun setUp() {
+//        activityScenarioRule.scenario.onActivity { activity ->
+//            decorView = activity.window.decorView
+//        }
+//    }
+
+    @Before
+     fun registerIdlingResource() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().register(dataBindingIdlingResource) }
 
@@ -113,36 +124,28 @@ class RemindersActivityTest :
         // Click on the addReminderFAB btn, select location,
         // add title and description and save
         onView(withId(R.id.addReminderFAB)).perform(click())
+        onView(withId(R.id.reminderTitle)).perform(typeText("Title"))
+        closeSoftKeyboard()
+        onView(withId(R.id.reminderDescription)).perform(typeText("Description"))
+        closeSoftKeyboard()
         onView(withId(R.id.selectLocation)).perform(click())
-        onView(withId(R.id.map)).perform(longClick())
+        onView(withId(R.id.map_fragment)).perform(longClick())
         onView(withId(R.id.save_location_btn)).perform(click())
-        onView(withId(R.id.reminderTitle)).perform(replaceText("Title"))
-        onView(withId(R.id.reminderDescription)).perform(replaceText("Description"))
         onView(withId(R.id.saveReminder)).perform(click())
 
-       //verify toast message is displayed in android api version lower than 30
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.R) {
-            onView(withText(R.string.reminder_saved)).inRoot(
-                withDecorView(
-                    not(
-                        `is`(
-                            getActivity(getApplicationContext())?.window?.decorView
-                        )
-                    )
-                )
-            ).check(
-                matches(
-                    isDisplayed()
-                )
-            )
-        }
+        //verify toast message is displayed
+        onView(withText(R.string.reminder_saved)).inRoot(withDecorView(not(`is`(getActivity(activityScenario).window.decorView))))
+            .check(matches(isDisplayed()))
 
         // Verify reminder is displayed on screen in the reminders list.
         onView(withText("Title")).check(matches(isDisplayed()))
         onView(withText("Description")).check(matches(isDisplayed()))
 
+
         // Make sure the activity is closed before resetting the db.
         activityScenario.close()
+
+
     }
 
     @Test
@@ -153,10 +156,10 @@ class RemindersActivityTest :
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
         // Click on the addReminderFAB btn, select location,
-        //description and  but not title and save
+        //add description and  but not title and save
         onView(withId(R.id.addReminderFAB)).perform(click())
         onView(withId(R.id.selectLocation)).perform(click())
-        onView(withId(R.id.map)).perform(longClick())
+        onView(withId(R.id.map_fragment)).perform(longClick())
         onView(withId(R.id.save_location_btn)).perform(click())
         onView(withId(R.id.reminderDescription)).perform(replaceText("Description"))
         onView(withId(R.id.saveReminder)).perform(click())
@@ -168,6 +171,36 @@ class RemindersActivityTest :
 
         // Make sure the activity is closed before resetting the db.
         activityScenario.close()
+    }
+    @Test
+    fun addReminder_withNoLocationShowSnackBar() = runBlocking {
+
+        // Start up Reminders screen.
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the addReminderFAB btn,
+        //add description and  title and save
+        onView(withId(R.id.addReminderFAB)).perform(click())
+        onView(withId(R.id.reminderTitle)).perform(replaceText("Title"))
+        onView(withId(R.id.reminderDescription)).perform(replaceText("Description"))
+        onView(withId(R.id.saveReminder)).perform(click())
+
+
+        // Verify snackBar is displayed with right message
+        onView(withId(R.id.snackbar_text))
+            .check(matches(withText(R.string.err_select_location)))
+
+        // Make sure the activity is closed before resetting the db.
+        activityScenario.close()
+    }
+
+    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity {
+        lateinit var activity: Activity
+        activityScenario.onActivity {
+            activity = it
+        }
+        return activity
     }
 
 

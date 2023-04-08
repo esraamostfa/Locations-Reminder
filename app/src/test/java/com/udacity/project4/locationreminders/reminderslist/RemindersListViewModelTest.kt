@@ -1,5 +1,6 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.locationreminders.MainCoroutineRule
@@ -31,6 +32,10 @@ class RemindersListViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
+
     // Subject under test
     private lateinit var viewModel: RemindersListViewModel
 
@@ -60,14 +65,8 @@ class RemindersListViewModelTest {
         stopKoin()
     }
 
-    // TODO debug
     @Test
     fun loadReminders_checkLoading() = runBlocking{
-        //Given some reminders saved to database
-        dataSource.saveReminder(ReminderDTO(
-            "title", "description", "location",0.0,0.0
-        ))
-
 
         // Pause dispatcher so you can verify initial values.
         mainCoroutineRule.pauseDispatcher()
