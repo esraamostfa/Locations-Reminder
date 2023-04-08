@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi
 import androidx.browser.customtabs.CustomTabsClient.getPackageName
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -134,13 +135,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map = googleMap
         checkLocationsPermissions()
 
-
         setPoiClick(map)
         setMapLongClick(map)
         setMapStyle(map)
     }
 
-    fun zoomToCurrentLocation(){
+    private fun zoomToCurrentLocation(){
 
         val locationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         locationClient.lastLocation.addOnSuccessListener { location: Location? ->
@@ -224,6 +224,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun checkLocationsPermissions() {
         if (foregroundAndBackgroundLocationPermissionApproved()) {
+            zoomToCurrentLocation()
             checkDeviceLocationSettings()
         } else {
             requestForegroundAndBackgroundLocationPermissions()
@@ -256,14 +257,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             return
         }
         Log.d(TAG, foregroundAndBackgroundLocationPermissionApproved().toString())
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+
             var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
             val resultCode = when {
                 runningQOrLater -> {
@@ -277,7 +271,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 permissionsArray,
                 resultCode
             )
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -318,6 +311,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun checkDeviceLocationSettings(resolve:Boolean = true) {
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
@@ -345,6 +339,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
         locationSettingsResponseTask.addOnCompleteListener {
             if ( it.isSuccessful ) {
+                map.isMyLocationEnabled = true
                 zoomToCurrentLocation()
             }
         }

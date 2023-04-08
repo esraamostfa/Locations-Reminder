@@ -84,8 +84,8 @@ class SaveReminderFragment : BaseFragment() {
             val latitude = _viewModel.latitude.value
             val longitude = _viewModel.longitude.value
 
-            val reminderData = ReminderDataItem(title, description, location, longitude, latitude)
-            addGeofenceRequest(reminderData)
+            val reminderData = ReminderDataItem(title, description, location, latitude, longitude)
+            checkPermissionsAndStartGeofencing(reminderData)
             }
     }
 
@@ -161,13 +161,10 @@ class SaveReminderFragment : BaseFragment() {
         if (foregroundAndBackgroundLocationPermissionApproved())
             return
 
-        // Else request the permission
-        // this provides the result[LOCATION_PERMISSION_INDEX]
-        var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+         var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
         val resultCode = when {
             runningQOrLater -> {
-                // this provides the result[BACKGROUND_LOCATION_PERMISSION_INDEX]
                 permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
             }
@@ -175,8 +172,7 @@ class SaveReminderFragment : BaseFragment() {
         }
 
         Log.d(TAG, "Request foreground only location permission")
-        ActivityCompat.requestPermissions(
-            requireActivity(),
+        requestPermissions(
             permissionsArray,
             resultCode
         )
