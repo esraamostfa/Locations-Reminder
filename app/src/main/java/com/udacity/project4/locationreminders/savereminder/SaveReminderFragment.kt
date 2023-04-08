@@ -218,8 +218,8 @@ class SaveReminderFragment : BaseFragment() {
             }
         }
         locationSettingsResponseTask.addOnCompleteListener {
-            if ( it.isSuccessful ) {
-                addGeofenceRequest(reminderData)
+            if ( it.isSuccessful ) {if (_viewModel.validateEnteredData(reminderData)){
+                addGeofenceRequest(reminderData)}
             }
         }
     }

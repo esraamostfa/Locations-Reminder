@@ -311,7 +311,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private fun checkDeviceLocationSettings(resolve:Boolean = true) {
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
@@ -339,7 +338,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
         locationSettingsResponseTask.addOnCompleteListener {
             if ( it.isSuccessful ) {
-                map.isMyLocationEnabled = true
                 zoomToCurrentLocation()
             }
         }
